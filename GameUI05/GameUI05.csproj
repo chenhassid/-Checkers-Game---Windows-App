@@ -34,6 +34,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Windows.Controls.Ribbon" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -50,6 +51,9 @@
     </Compile>
     <Compile Include="BoardGameForm.Designer.cs">
       <DependentUpon>BoardGameForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SquareButton.cs">
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="StartGameForm.cs">
       <SubType>Form</SubType>

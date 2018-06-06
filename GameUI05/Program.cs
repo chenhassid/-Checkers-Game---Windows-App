@@ -12,14 +12,13 @@ namespace GameUI05
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        public static void Main()
         {
            // Application.EnableVisualStyles();
           //  Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new StartGameForm());
-            Application.Run(new BoardGameForm());
-     
-
+            BoardGameForm b = new BoardGameForm(10);
+            b.ShowDialog();
         }
     }
 }

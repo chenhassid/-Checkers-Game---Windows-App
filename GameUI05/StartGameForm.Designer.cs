@@ -2,6 +2,7 @@
 {
     partial class StartGameForm
     {
+        
         /// <summary>
         /// Required designer variable.
         /// </summary>
@@ -78,6 +79,7 @@
             // 
             // label1
             // 
+          
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(39, 23);
             this.label1.Name = "BoardSize";
