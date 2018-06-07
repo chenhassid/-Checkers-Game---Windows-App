@@ -7,14 +7,119 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using GameLogic;
 
 namespace GameUI05
 {
     public partial class BoardGameForm : Form
     {
-        public BoardGameForm()
+        private short m_Size;
+        private SquareButton[,] m_Squares;
+        private Move currentMove;
+
+        public BoardGameForm(short i_Size)
         {
             InitializeComponent();
+            m_Size = i_Size;
+            m_Squares = new SquareButton[this.m_Size, this.m_Size];
+            InitBoard();
+   
+
+        }
+
+        public SquareButton[,] Squares
+        {
+            get
+            {
+                return m_Squares;
+            }
+            set
+            {
+                m_Squares = value;
+            }
+        }
+
+        public void button_Click(Object sender, EventArgs e)
+        {
+            SquareButton button = (SquareButton)sender;
+            
+            int row = button.Row;
+            int col = button.Column;
+
+            if (currentMove == null)
+                currentMove = new Move();
+            if (currentMove.FromSquare == null)
+            {
+                currentMove.FromSquare = new Square(button.Type, row, col);
+            }
+            else
+            {
+                currentMove.ToSquare = new Square(button.Type ,row, col);
+            }
+            if ((currentMove.FromSquare != null) && (currentMove.ToSquare != null))
+            {
+                /*
+                if (CheckMove())
+                {
+                    MakeMove();
+                    aiMakeMove();
+                }
+                */
+
+                MakeMove();
+            }
+        }
+      public void MakeMove()
+        {
+            Square fromSquare = currentMove.FromSquare;
+            Square toSquare = currentMove.ToSquare;
+            SquareButton fromButton = Squares[currentMove.FromSquare.Row, currentMove.FromSquare.Column];
+            SquareButton toButton = Squares[currentMove.ToSquare.Row, currentMove.ToSquare.Column];
+
+            switch (currentMove.MoveType)
+            {
+                case (GameLogic.Move.eTypeOfMove.Regular):
+
+                    if (fromSquare.Type == Square.eSquareType.X && toSquare.Row == 0)
+                    {
+                        toSquare.Type = Square.eSquareType.K;                      
+                    }
+
+                    else
+                        if (fromSquare.Type == Square.eSquareType.O && toSquare.Row == m_Size - 1)
+                    {
+                        toSquare.Type = Square.eSquareType.U;
+                    }
+                    else
+                    {
+                        toSquare.Type = fromSquare.Type;
+                        
+                    }
+                    fromSquare.Type = Square.eSquareType.None;
+                    break;
+
+                case (GameLogic.Move.eTypeOfMove.Jump):
+                   // capturePieceOnBoard(i_BoardGame);
+
+                    if (fromSquare.Type == Square.eSquareType.X && toSquare.Row == 0)
+                    {
+                        toSquare.Type = Square.eSquareType.K;
+                    }
+
+                    else
+                    {
+                        if (fromSquare.Type == Square.eSquareType.O && toSquare.Row == m_Size - 1)
+                        {
+                            toSquare.Type = Square.eSquareType.U;
+                        }
+                        else
+                        {
+                            toSquare.Type = fromSquare.Type;
+                        }
+                    }
+                    fromSquare.Type = Square.eSquareType.None;
+                    break;
+            }
         }
 
         private void BoardGame_Load(object sender, EventArgs e)

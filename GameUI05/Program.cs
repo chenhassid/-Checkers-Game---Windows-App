@@ -16,9 +16,7 @@ namespace GameUI05
         {
            // Application.EnableVisualStyles();
           //  Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new StartGameForm());
-            BoardGameForm b = new BoardGameForm(10);
-            b.ShowDialog();
+            Application.Run(new StartGameForm());         
         }
     }
 }

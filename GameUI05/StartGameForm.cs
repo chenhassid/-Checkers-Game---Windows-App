@@ -12,55 +12,115 @@ namespace GameUI05
 {
     public partial class StartGameForm : Form
     {
+        private bool m_ValidClientForm = false;
+
         public StartGameForm()
         {
             InitializeComponent();
-            // 
-            // StartGame
-            // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(332, 252);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.textBox2);
-            this.Controls.Add(this.textBox1);
-            this.Controls.Add(this.checkBox1);
-            this.Controls.Add(this.label4);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.linkLabel1);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.radioButton3);
-            this.Controls.Add(this.radioButton2);
-            this.Controls.Add(this.radioButton1);
-            this.Name = "StartGame";
-            this.Text = "Game Settings";
-            this.Load += new System.EventHandler(this.StartGame_Load);
-            this.ResumeLayout(false);
-            this.PerformLayout();
-                this.MaximizeBox = false;
-            this.MinimizeBox = false;
-
         }
 
-        private void radioButton1_CheckedChanged(object sender, EventArgs e)
+        public short BoardSize
         {
-            
+            get
+            {
+                short boardSize = 0;
+
+                if (radioButtonSize6.Checked == true)
+                {
+                    boardSize = 6;
+                }
+                else
+                {
+                    if (radioButtonSize8.Checked == true)
+                    {
+                        {
+                            boardSize = 8;
+                        }
+                    }
+                    else if (radioButtonSize10.Checked == true)
+                    {
+                        boardSize = 10;
+                    }
+                }
+
+                return boardSize;
+            }
         }
 
-        private void label1_Click(object sender, EventArgs e)
-        {
 
+    private void checkBoxPlayer2_Click(object sender, EventArgs e)
+    {
+        if (checkBoxPlayer2.Checked)
+        {
+            textBoxPlayer2.Enabled = true;
+            textBoxPlayer2.Text = string.Empty;
         }
-
-        private void label2_Click(object sender, EventArgs e)
+        else
         {
-
-        }
-
-        private void StartGame_Load(object sender, EventArgs e)
-        {
-
+            textBoxPlayer2.Enabled = false;
+            textBoxPlayer2.Text = "[Computer]";
         }
     }
+
+
+    private void buttonDone_Click(object sender, EventArgs e)
+    {
+        if (ensureLoggedIn())
+        {
+            BoardGameForm boardGameForm = new BoardGameForm(this.BoardSize);
+            this.Hide();
+            boardGameForm.ShowDialog();
+            this.Close();
+        }
+    }
+
+    private bool ensureLoggedIn()
+    {
+        if (!m_ValidClientForm)
+        {
+            if (IsValidSizePlayersName(textBoxPlayer1) && IsValidSizePlayersName(textBoxPlayer2) && IsValidSizeRadioButtons())
+            {
+                m_ValidClientForm = true;
+            }
+            else
+            {
+                if (MessageBox.Show("The form is invalid. Try again", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error) == DialogResult.Retry)
+                {
+                    ensureLoggedIn();
+                }
+            }
+        }
+
+        return m_ValidClientForm;
+    }
+
+    private bool IsValidSizeRadioButtons()
+    {
+
+        return (radioButtonSize6.Checked || radioButtonSize8.Checked || radioButtonSize10.Checked);
+    }
+
+    private bool IsValidSizePlayersName(TextBox i_PlayerTextBox)
+    {
+        const short k_PlayerNameValidLength = 20;
+
+        return !((i_PlayerTextBox.Text.Length > k_PlayerNameValidLength) || i_PlayerTextBox.Text.Contains(" ") || i_PlayerTextBox.Text.Length == 0);
+    }
+
+    private void radioButton1_CheckedChanged(object sender, EventArgs e)
+    {
+
+    }
+
+
+    private void StartGame_Load(object sender, EventArgs e)
+    {
+
+    }
+
+    private void StartGameForm_Load(object sender, EventArgs e)
+    {
+
+    }
+}
 }

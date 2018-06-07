@@ -2,41 +2,16 @@
 using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using GameLogic;
 
 namespace GameUI05
 {
     partial class BoardGameForm : Form
-    {
-        private short m_Size;
-        private SquareButton[,] m_Squares;
-
+    {  
         /// <summary>
         /// Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
-
-        public BoardGameForm(short i_Size)
-        {
-            InitializeComponent();
-            this.m_Size = i_Size;
-            m_Squares = new SquareButton[this.m_Size, this.m_Size];
-
-            this.StartPosition = FormStartPosition.CenterScreen;
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(m_Size*50 , m_Size*50 +50 ) ;
-
-            this.FormBorderStyle = FormBorderStyle.Fixed3D;
-
-
-            this.Name = "BoardGameForm";
-            this.Text = "Damka";
-            this.Load += new System.EventHandler(this.BoardGame_Load);
-            this.ResumeLayout(false);
-            this.PerformLayout();
-         
-
-            InitBoard();
-        }
 
         /// <summary>
         /// Clean up any resources being used.
@@ -95,6 +70,19 @@ namespace GameUI05
             this.ResumeLayout(false);
             this.PerformLayout();
 
+            this.StartPosition = FormStartPosition.CenterScreen;
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(m_Size * 50, m_Size * 50 + 50);
+
+            this.FormBorderStyle = FormBorderStyle.Fixed3D;
+
+
+            this.Name = "BoardGameForm";
+            this.Text = "Damka";
+            this.Load += new System.EventHandler(this.BoardGame_Load);
+            this.ResumeLayout(false);
+            this.PerformLayout();
+
         }
 
         internal void InitBoard()
@@ -103,12 +91,12 @@ namespace GameUI05
             {
                 for (int j = 0; j < this.m_Size; j++)
                 {
-                    SquareButton currentSquare = m_Squares[i, j];
                     if (i % 2 == 1)
                     {
                         if (j % 2 == 0)
                         {
-                            m_Squares[i, j] = new SquareButton(SquareButton.eSquareType.None, i, j);
+                            m_Squares[i, j] = new SquareButton(Square.eSquareType.None, i, j);
+                            m_Squares[i, j].Click += new System.EventHandler(button_Click);
                             m_Squares[i, j].BackColor = Color.White;
                             int yLocation = i * 50 + 50;
                             int xLocation = j * 50 - 4;
@@ -119,7 +107,7 @@ namespace GameUI05
                         }
                         else
                         {
-                            m_Squares[i, j] = new SquareButton(SquareButton.eSquareType.None, i, j);
+                            m_Squares[i, j] = new SquareButton(Square.eSquareType.None, i, j);
                             m_Squares[i, j].BackColor = Color.Black;
                             int yLocation = i * 50 + 50;
                             int xLocation = j * 50 - 4;
@@ -131,7 +119,7 @@ namespace GameUI05
                     {
                         if (j % 2 == 1)
                         {
-                            m_Squares[i, j] = new SquareButton(SquareButton.eSquareType.None, i, j);
+                            m_Squares[i, j] = new SquareButton(Square.eSquareType.None, i, j);
                             m_Squares[i, j].BackColor = Color.White;
                             int yLocation = i * 50 + 50;
                             int xLocation = j * 50 - 4;
@@ -140,7 +128,7 @@ namespace GameUI05
                         }
                         else
                         {
-                            m_Squares[i, j] = new SquareButton(SquareButton.eSquareType.None, i, j);
+                            m_Squares[i, j] = new SquareButton(Square.eSquareType.None, i, j);
                             m_Squares[i, j].BackColor = Color.Black;
                             int yLocation = i * 50 + 50;
                             int xLocation = j * 50 - 4;
@@ -158,7 +146,7 @@ namespace GameUI05
                     {
                         if (j % 2 == 0)
                         {
-                            m_Squares[i, j].Type = SquareButton.eSquareType.O;
+                            m_Squares[i, j].Type = Square.eSquareType.O;
                             m_Squares[i, j].Text = "O";
                         }
                     }
@@ -166,7 +154,7 @@ namespace GameUI05
                     {
                         if (j % 2 == 1)
                         {
-                            m_Squares[i, j].Type = SquareButton.eSquareType.O;
+                            m_Squares[i, j].Type = Square.eSquareType.O;
                             m_Squares[i, j].Text = "O";
                         }
                     }
@@ -181,7 +169,7 @@ namespace GameUI05
                     {
                         if (j % 2 == 0)
                         {
-                            m_Squares[i, j].Type = SquareButton.eSquareType.O;
+                            m_Squares[i, j].Type = Square.eSquareType.O;
                             m_Squares[i, j].Text = "X";
                         }
                     }
@@ -189,7 +177,7 @@ namespace GameUI05
                     {
                         if (j % 2 == 1)
                         {
-                            m_Squares[i, j].Type = SquareButton.eSquareType.O;
+                            m_Squares[i, j].Type = Square.eSquareType.O;
                             m_Squares[i, j].Text = "X";
                         }
                     }
