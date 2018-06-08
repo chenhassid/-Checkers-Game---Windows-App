@@ -19,6 +19,7 @@ namespace GameUI05
         private Move M_CurrentMove;
         private StartGameForm m_StartGameForm;
         private bool v_IsComputerGame;
+        private Player m_PlayerTurn;
 
         public BoardGameForm(StartGameForm i_StartGameForm)
         {
@@ -31,7 +32,8 @@ namespace GameUI05
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(SizeBoard * 50, SizeBoard * 50 + 50);
             this.FormBorderStyle = FormBorderStyle.Fixed3D;
-          
+            m_PlayerTurn = new Player(Player.eShapeType.X, m_StartGameForm.TextBoxPlayer1.Text, Player.ePlayerType.Person);
+
         }
 
         protected override void OnLoad(EventArgs e)
@@ -40,7 +42,7 @@ namespace GameUI05
             InitializeComponent();
             InitBoard();
 
-            if(v_IsComputerGame)
+            if (v_IsComputerGame)
             {
                 m_Game = new GameManager(m_StartGameForm.TextBoxPlayer1.Text, m_StartGameForm.BoardSize);
             }
@@ -56,7 +58,7 @@ namespace GameUI05
             get
             {
                 return m_StartGameForm;
-            }      
+            }
         }
 
         public SquareButton[,] Squares
@@ -91,7 +93,6 @@ namespace GameUI05
         public void button_Click(Object sender, EventArgs e)
         {
             SquareButton button = sender as SquareButton;
-
             int row = button.Row;
             int col = button.Column;
 
@@ -119,91 +120,28 @@ namespace GameUI05
                     aiMakeMove();
                 }
                 */
-                if (CheckMove(Player.eShapeType.X))
+
+
+                if (m_Game.isValidMove(M_CurrentMove))
                 {
                     MakeMove();
+                    v_IsComputerGame = true;
                 }
+             
                 if (v_IsComputerGame)
                 {
                     MakeComputerMove();
+                    v_IsComputerGame = !v_IsComputerGame;
                 }
+             
             }
         }
 
-        private bool CheckMove(Player.eShapeType i_ShapeOfPlayer)
-        {
-            bool isValidMove = true;
-
-            switch (i_ShapeOfPlayer)
-            {
-                case Player.eShapeType.X:
-                    if (M_CurrentMove.FromSquare.Type != Square.eSquareType.X && M_CurrentMove.FromSquare.Type != Square.eSquareType.K)
-                    {
-                        isValidMove = false;
-                    }
-                    else
-                    {
-                        if (M_CurrentMove.FromSquare.Type != Square.eSquareType.None)
-                        {
-                            isValidMove = false;
-                        }
-                        else
-                        {
-                            /*
-                            if (M_CurrentMove.FromSquare.Type == Square.eSquareType.X)
-                            {
-                                isValidMove = isValidDiagonalMove(Player.eShapeType.X);
-                            }
-                            else
-                            {
-                                isValidMove = isValidDiagonalKingMove(Player.eShapeType.X);
-                            }*/
-                            isValidMove = true;
-                        }
-                    }
-                    break;
-
-                case Player.eShapeType.O:
-
-                    if (M_CurrentMove.FromSquare.Type != Square.eSquareType.O && M_CurrentMove.FromSquare.Type != Square.eSquareType.U)
-                    {
-                        isValidMove = false;
-
-                    }
-                    else
-                    {
-                        isValidMove = true;
-                        /*
-                        
-                        if( M_CurrentMove.ToSquare.Type != Square.eSquareType.None)
-                        {
-                            isValidMove = false;
-                        }
-                        else
-                        {
-
-                            if (M_CurrentMove.FromSquare.Type == Square.eSquareType.O)
-                            {
-                                isValidMove = isValidDiagonalMove(Player.eShapeType.O);
-                            }
-
-                            else
-                            {
-                                isValidMove = isValidDiagonalKingMove(Player.eShapeType.O);
-                            }
-                        }
-                        */
-                    }
-                    break;
-            }
-
-            return isValidMove;
-
-        }
 
         private void MakeComputerMove()
         {
-         
+            // m_Game.playComputerTurn();
+
         }
 
         public void MakeMove()
@@ -242,7 +180,7 @@ namespace GameUI05
             fromButton.Type = Square.eSquareType.None;
             fromButton.Text = string.Empty;
             M_CurrentMove = null;
-      
+
             //        break;
 
             /*
@@ -273,7 +211,7 @@ namespace GameUI05
 
         private void invalidMove(object sender, EventArgs e)
         {
-            MessageBox.Show("Invalid Move!" + Environment.NewLine + "Please choose another move", "best Damka ever", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            MessageBox.Show("Invalid Move!" + Environment.NewLine + "Please choose a valid move", "Damka", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
         private void BoardGame_Load(object sender, EventArgs e)

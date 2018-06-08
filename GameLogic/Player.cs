@@ -26,7 +26,7 @@ namespace GameLogic
         private bool v_JumpTurn;
         private int m_Points;
 
-        internal Player(eShapeType shape, string PlayerName, ePlayerType i_PlayerType)
+        public Player(eShapeType shape, string PlayerName, ePlayerType i_PlayerType)
         {
             this.m_Shape = shape;
             this.m_PlayerName = PlayerName;

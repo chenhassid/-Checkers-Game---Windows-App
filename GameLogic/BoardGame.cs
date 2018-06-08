@@ -248,7 +248,7 @@ namespace GameLogic
             return leggalMoves;
         }
 
-        internal List<Move> GetListOfPlayerJumps(Player.eShapeType i_Shape)
+        public List<Move> GetListOfPlayerJumps(Player.eShapeType i_Shape)
         {
             List<Move> leggalJumps = new List<Move>();
             short boardSize = this.GetSize();
