@@ -20,6 +20,8 @@ namespace GameLogic
 
         public Move()
         {
+            m_FromSquare = null;
+            m_ToSquare = null;
         }
 
         public Move(Square m_FromPiece, Square m_ToPiece)
@@ -161,7 +163,7 @@ namespace GameLogic
         }
         */
 
-        internal bool CheckIsValidMove(Player.eShapeType i_ShapeOfPlayer)
+        public bool CheckIsValidMove(Player.eShapeType i_ShapeOfPlayer)
         {
             bool isValidMove = true;
 
@@ -224,7 +226,7 @@ namespace GameLogic
             return isValidMove;
         }
 
-        private bool isValidDiagonalMove(Player.eShapeType i_Shape)
+        public bool isValidDiagonalMove(Player.eShapeType i_Shape)
         {
             bool isValidMove = false;
 
@@ -260,7 +262,7 @@ namespace GameLogic
             return isValidMove;
         }
 
-        private bool isValidDiagonalKingMove(Player.eShapeType i_ShapeOfMove)
+        public bool isValidDiagonalKingMove(Player.eShapeType i_ShapeOfMove)
         {
             bool isValidKingMove = false;
 

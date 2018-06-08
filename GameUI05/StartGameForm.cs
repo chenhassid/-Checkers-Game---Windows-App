@@ -19,6 +19,30 @@ namespace GameUI05
             InitializeComponent();
         }
 
+        public CheckBox CheckBoxPlayer2
+        {
+            get
+            {
+                return this.checkBoxPlayer2;
+            }
+        }
+
+        public TextBox TextBoxPlayer1
+        {
+            get
+            {
+              return this.textBoxPlayer1;
+            }
+        }
+
+        public TextBox TextBoxPlayer2
+        {
+            get
+            {
+                return this.textBoxPlayer2;
+            }
+        }
+
         public short BoardSize
         {
             get
@@ -67,7 +91,7 @@ namespace GameUI05
     {
         if (ensureLoggedIn())
         {
-            BoardGameForm boardGameForm = new BoardGameForm(this.BoardSize);
+            BoardGameForm boardGameForm = new BoardGameForm(this);
             this.Hide();
             boardGameForm.ShowDialog();
             this.Close();

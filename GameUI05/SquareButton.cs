@@ -18,11 +18,12 @@ namespace GameUI05
         internal int m_Row;
         internal int m_Column;
 
-       
-
         public Square.eSquareType Type
         {
-            get { return m_Type; }
+            get
+            {
+                return m_Type;
+            }
             set
             {
                 m_Type = value;
@@ -46,23 +47,26 @@ namespace GameUI05
             m_Type = i_SquareType;
             m_Row = i_Row;
             m_Column = i_Column;
-            
 
             switch (i_SquareType)
             {
-                case Square.eSquareType.O:
-                    this.Text = "O";
-                    break;
-                case Square.eSquareType.X:
-                    this.Text = "X";
-                    break;
-                case Square.eSquareType.K:
+                case (Square.eSquareType.K):
                     this.Text = "K";
                     break;
-                case Square.eSquareType.U:
+                case (Square.eSquareType.U):
                     this.Text = "U";
                     break;
+                case (Square.eSquareType.O):
+                    this.Text = "O";
+                    break;
+                case (Square.eSquareType.X):
+                    this.Text = "X";
+                    break;
+                case (Square.eSquareType.None):
+                    this.Text = " ";
+                    break;
             }
+      
         }
     }
 }

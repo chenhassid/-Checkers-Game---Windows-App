@@ -13,18 +13,50 @@ namespace GameUI05
 {
     public partial class BoardGameForm : Form
     {
+        private GameManager m_Game;
         private short m_Size;
         private SquareButton[,] m_Squares;
-        private Move currentMove;
+        private Move M_CurrentMove;
+        private StartGameForm m_StartGameForm;
+        private bool v_IsComputerGame;
 
-        public BoardGameForm(short i_Size)
+        public BoardGameForm(StartGameForm i_StartGameForm)
         {
-            InitializeComponent();
-            m_Size = i_Size;
+            m_StartGameForm = i_StartGameForm;
+            m_Size = m_StartGameForm.BoardSize;
+            M_CurrentMove = null;
             m_Squares = new SquareButton[this.m_Size, this.m_Size];
-            InitBoard();
-   
+            v_IsComputerGame = !m_StartGameForm.CheckBoxPlayer2.Checked;
+            this.StartPosition = FormStartPosition.CenterScreen;
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(SizeBoard * 50, SizeBoard * 50 + 50);
+            this.FormBorderStyle = FormBorderStyle.Fixed3D;
+          
+        }
 
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
+            InitializeComponent();
+            InitBoard();
+
+            if(v_IsComputerGame)
+            {
+                m_Game = new GameManager(m_StartGameForm.TextBoxPlayer1.Text, m_StartGameForm.BoardSize);
+            }
+            else
+            {
+                m_Game = new GameManager(m_StartGameForm.TextBoxPlayer1.Text, m_StartGameForm.TextBoxPlayer2.Text, m_StartGameForm.BoardSize);
+            }
+
+            registerEvents();
+        }
+        public StartGameForm GetStartGameForm
+        {
+            get
+            {
+                return m_StartGameForm;
+            }      
         }
 
         public SquareButton[,] Squares
@@ -39,24 +71,46 @@ namespace GameUI05
             }
         }
 
+        public short SizeBoard
+        {
+            get
+            {
+                return m_Size;
+            }
+            set
+            {
+                m_Size = value;
+            }
+        }
+
+        private void registerEvents()
+        {
+            m_Game.InvalidMove += new EventHandler(invalidMove);
+        }
+
         public void button_Click(Object sender, EventArgs e)
         {
-            SquareButton button = (SquareButton)sender;
-            
+            SquareButton button = sender as SquareButton;
+
             int row = button.Row;
             int col = button.Column;
 
-            if (currentMove == null)
-                currentMove = new Move();
-            if (currentMove.FromSquare == null)
+            if (M_CurrentMove == null)
             {
-                currentMove.FromSquare = new Square(button.Type, row, col);
+                M_CurrentMove = new Move();
             }
+
+            if (M_CurrentMove.FromSquare == null)
+            {
+                M_CurrentMove.FromSquare = new Square(button.Type, row, col);
+            }
+
             else
             {
-                currentMove.ToSquare = new Square(button.Type ,row, col);
+                M_CurrentMove.ToSquare = new Square(button.Type, row, col);
             }
-            if ((currentMove.FromSquare != null) && (currentMove.ToSquare != null))
+
+            if ((M_CurrentMove.FromSquare != null) && (M_CurrentMove.ToSquare != null))
             {
                 /*
                 if (CheckMove())
@@ -65,61 +119,161 @@ namespace GameUI05
                     aiMakeMove();
                 }
                 */
-
-                MakeMove();
+                if (CheckMove(Player.eShapeType.X))
+                {
+                    MakeMove();
+                }
+                if (v_IsComputerGame)
+                {
+                    MakeComputerMove();
+                }
             }
         }
-      public void MakeMove()
+
+        private bool CheckMove(Player.eShapeType i_ShapeOfPlayer)
         {
-            Square fromSquare = currentMove.FromSquare;
-            Square toSquare = currentMove.ToSquare;
-            SquareButton fromButton = Squares[currentMove.FromSquare.Row, currentMove.FromSquare.Column];
-            SquareButton toButton = Squares[currentMove.ToSquare.Row, currentMove.ToSquare.Column];
+            bool isValidMove = true;
 
-            switch (currentMove.MoveType)
+            switch (i_ShapeOfPlayer)
             {
-                case (GameLogic.Move.eTypeOfMove.Regular):
-
-                    if (fromSquare.Type == Square.eSquareType.X && toSquare.Row == 0)
+                case Player.eShapeType.X:
+                    if (M_CurrentMove.FromSquare.Type != Square.eSquareType.X && M_CurrentMove.FromSquare.Type != Square.eSquareType.K)
                     {
-                        toSquare.Type = Square.eSquareType.K;                      
-                    }
-
-                    else
-                        if (fromSquare.Type == Square.eSquareType.O && toSquare.Row == m_Size - 1)
-                    {
-                        toSquare.Type = Square.eSquareType.U;
+                        isValidMove = false;
                     }
                     else
                     {
-                        toSquare.Type = fromSquare.Type;
-                        
+                        if (M_CurrentMove.FromSquare.Type != Square.eSquareType.None)
+                        {
+                            isValidMove = false;
+                        }
+                        else
+                        {
+                            /*
+                            if (M_CurrentMove.FromSquare.Type == Square.eSquareType.X)
+                            {
+                                isValidMove = isValidDiagonalMove(Player.eShapeType.X);
+                            }
+                            else
+                            {
+                                isValidMove = isValidDiagonalKingMove(Player.eShapeType.X);
+                            }*/
+                            isValidMove = true;
+                        }
                     }
-                    fromSquare.Type = Square.eSquareType.None;
                     break;
 
-                case (GameLogic.Move.eTypeOfMove.Jump):
+                case Player.eShapeType.O:
+
+                    if (M_CurrentMove.FromSquare.Type != Square.eSquareType.O && M_CurrentMove.FromSquare.Type != Square.eSquareType.U)
+                    {
+                        isValidMove = false;
+
+                    }
+                    else
+                    {
+                        isValidMove = true;
+                        /*
+                        
+                        if( M_CurrentMove.ToSquare.Type != Square.eSquareType.None)
+                        {
+                            isValidMove = false;
+                        }
+                        else
+                        {
+
+                            if (M_CurrentMove.FromSquare.Type == Square.eSquareType.O)
+                            {
+                                isValidMove = isValidDiagonalMove(Player.eShapeType.O);
+                            }
+
+                            else
+                            {
+                                isValidMove = isValidDiagonalKingMove(Player.eShapeType.O);
+                            }
+                        }
+                        */
+                    }
+                    break;
+            }
+
+            return isValidMove;
+
+        }
+
+        private void MakeComputerMove()
+        {
+         
+        }
+
+        public void MakeMove()
+        {
+            this.Text = "From: " + M_CurrentMove.FromSquare.Row.ToString() + "," + M_CurrentMove.FromSquare.Column.ToString() + " To: " + M_CurrentMove.ToSquare.Row.ToString() + "," + M_CurrentMove.ToSquare.Column.ToString();
+
+            Square fromSquare = M_CurrentMove.FromSquare;
+            Square toSquare = M_CurrentMove.ToSquare;
+            SquareButton fromButton = Squares[fromSquare.Row, fromSquare.Column];
+            SquareButton toButton = Squares[toSquare.Row, toSquare.Column];
+
+            //  switch (currentMove.MoveType)
+            //{
+            //    case (GameLogic.Move.eTypeOfMove.Regular):
+
+            if (fromSquare.Type == Square.eSquareType.X && toSquare.Row == 0)
+            {
+                toButton.Type = Square.eSquareType.K;
+                toButton.Text = "K";
+            }
+
+            else
+            {
+                if (fromSquare.Type == Square.eSquareType.O && toSquare.Row == m_Size - 1)
+                {
+                    toButton.Type = Square.eSquareType.U;
+                    toButton.Text = "U";
+                }
+                else
+                {
+                    toButton.Type = fromSquare.Type;
+                    toButton.Text = fromSquare.ToStringSqureType();
+                }
+            }
+
+            fromButton.Type = Square.eSquareType.None;
+            fromButton.Text = string.Empty;
+            M_CurrentMove = null;
+      
+            //        break;
+
+            /*
+            //    case (GameLogic.Move.eTypeOfMove.Jump):
                    // capturePieceOnBoard(i_BoardGame);
 
                     if (fromSquare.Type == Square.eSquareType.X && toSquare.Row == 0)
                     {
-                        toSquare.Type = Square.eSquareType.K;
+                        toButton.Type = Square.eSquareType.K;
                     }
 
                     else
                     {
                         if (fromSquare.Type == Square.eSquareType.O && toSquare.Row == m_Size - 1)
                         {
-                            toSquare.Type = Square.eSquareType.U;
+                            toButton.Type = Square.eSquareType.U;
                         }
                         else
                         {
-                            toSquare.Type = fromSquare.Type;
+                            toButton.Type = fromSquare.Type;
                         }
                     }
-                    fromSquare.Type = Square.eSquareType.None;
-                    break;
-            }
+                    fromButton.Type = Square.eSquareType.None;
+              //      break;
+          //  }
+          */
+        }
+
+        private void invalidMove(object sender, EventArgs e)
+        {
+            MessageBox.Show("Invalid Move!" + Environment.NewLine + "Please choose another move", "best Damka ever", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
         private void BoardGame_Load(object sender, EventArgs e)
@@ -129,7 +283,7 @@ namespace GameUI05
 
         private void label1_Click(object sender, EventArgs e)
         {
-            
+
         }
 
         private void label2_Click(object sender, EventArgs e)

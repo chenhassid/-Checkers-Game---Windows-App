@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{26782C16-25A1-4ABD-9161-D79D3DA1EB12}</ProjectGuid>
+    <ProjectGuid>{915163C2-6766-416B-81FF-32FD95EC39BA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>GameLogic</RootNamespace>
     <AssemblyName>GameLogic</AssemblyName>
@@ -38,6 +38,8 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BoardGame.cs" />
+    <Compile Include="GameManager.cs" />
     <Compile Include="Move.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Square.cs" />
