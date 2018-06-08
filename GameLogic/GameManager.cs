@@ -57,15 +57,16 @@ namespace GameLogic
             return this.m_Player2;
         }
 
+        public BoardGame GetBoardGame()
+        {
+            return this.m_BoardGame;
+        }
+
         internal eGameStatus GetGameStatus()
         {
             return this.m_GameStatus;
         }
 
-        internal BoardGame GetBoardGame()
-        {
-            return this.m_BoardGame;
-        }
 
 
         private void gameRound(Move i_CurrentMove)
@@ -276,8 +277,8 @@ namespace GameLogic
 
             if (!isValidMove(i_CurrentMove))
             {
-                Console.WriteLine("DFSDFSD");
-                InvalidMove.Invoke(this, EventArgs.Empty);
+           
+            //    InvalidMove.Invoke(this, EventArgs.Empty);
 
             }
 

@@ -8,14 +8,12 @@ namespace GameUI05
 {
     partial class BoardGameForm : Form
     {  
-        /// <summary>
-        /// Required designer variable.
-        /// </summary>
-        private System.ComponentModel.IContainer components = null;
+       
 
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
+
+
+        private System.ComponentModel.IContainer components = null;
+       
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
@@ -33,8 +31,8 @@ namespace GameUI05
         /// </summary>
         private void InitializeComponent()
         {
-            this.Player1 = new System.Windows.Forms.Label();
-            this.Player2 = new System.Windows.Forms.Label();
+            this.Player1 = new Label();
+            this.Player2 = new Label();
             this.SuspendLayout();
             // 
             // Player1
@@ -45,6 +43,7 @@ namespace GameUI05
             this.Player1.Size = new System.Drawing.Size(45, 13);
             this.Player1.TabIndex = 0;
             this.Player1.Text = GetStartGameForm.TextBoxPlayer1.Text;
+            this.Player1.Font = new Font("Arial", 8F, FontStyle.Bold, GraphicsUnit.Point, (byte)0);
             this.Player1.Click += new System.EventHandler(this.label1_Click);
             // 
             // Player2
@@ -54,13 +53,14 @@ namespace GameUI05
             this.Player2.Name = "Player2";
             this.Player2.Size = new System.Drawing.Size(42, 13);
             this.Player2.TabIndex = 1;
+            this.Player2.Font = new Font("Arial", 8F, FontStyle.Bold, GraphicsUnit.Point, (byte)0);
             this.Player2.Text = GetStartGameForm.TextBoxPlayer2.Text;
             this.Player2.Click += new System.EventHandler(this.label2_Click);
             // 
             // BoardGameForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleMode = AutoScaleMode.Font;
             this.Controls.Add(this.Player2);
             this.Controls.Add(this.Player1);
             this.Name = "BoardGameForm";

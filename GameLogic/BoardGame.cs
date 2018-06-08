@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GameLogic
 {
-    class BoardGame
+    public class BoardGame
     {
 
         public Square[,] m_Board;

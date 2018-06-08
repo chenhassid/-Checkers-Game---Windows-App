@@ -337,7 +337,7 @@ namespace GameLogic
             }
         }
 
-        private void capturePieceOnBoard(BoardGame i_BoardGame)
+        public void capturePieceOnBoard(BoardGame i_BoardGame)
         {
             int rowOfCapturPiece = 0;
             int columnOfCapturPiece = 0;
