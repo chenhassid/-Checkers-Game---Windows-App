@@ -48,10 +48,10 @@ namespace GameLogic
             get { return m_Column; }
         }
 
-        public string ToStringSqureType()
+        public static string ToStringSqureType(eSquareType i_Type)
         {
             string squareTypeString = "";
-            switch (this.m_Type)
+            switch (i_Type)
             {
                 case (eSquareType.None):
                     squareTypeString = "   ";

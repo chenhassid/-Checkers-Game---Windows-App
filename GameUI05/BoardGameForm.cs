@@ -17,7 +17,7 @@ namespace GameUI05
         private GameManager m_Game;
         private short m_Size;
         private SquareButton[,] m_Squares;
-        private Move M_CurrentMove;
+        private Move m_CurrentMove;
         private StartGameForm m_StartGameForm;
         private bool v_IsComputerGame;
         private Player m_PlayerTurn;
@@ -27,7 +27,7 @@ namespace GameUI05
         {
             m_StartGameForm = i_StartGameForm;
             m_Size = m_StartGameForm.BoardSize;
-            M_CurrentMove = null;
+            m_CurrentMove = null;
             m_Squares = new SquareButton[this.m_Size, this.m_Size];
             v_IsComputerGame = !m_StartGameForm.CheckBoxPlayer2.Checked;
             this.StartPosition = FormStartPosition.CenterScreen;
@@ -62,6 +62,11 @@ namespace GameUI05
                 return m_StartGameForm;
             }
         }
+        public Move CurrentMove
+        {
+            get { return m_CurrentMove; }
+            set { m_CurrentMove = value; }
+        }
 
         public SquareButton[,] Squares
         {
@@ -86,10 +91,10 @@ namespace GameUI05
                 m_Size = value;
             }
         }
-
         private void registerEvents()
         {
             m_Game.InvalidMove += new EventHandler(invalidMove);
+            m_Game.MakeMove += new EventHandler(makeMove);
 
         }
 
@@ -97,35 +102,35 @@ namespace GameUI05
 
         public void button_Click(Object sender, EventArgs e)
         {
-            SquareButton button = sender as SquareButton;
+            SquareButton button = (SquareButton)sender;
             int row = button.Row;
             int col = button.Column;
 
-            if (M_CurrentMove == null)
+            if (CurrentMove == null)
             {
-                M_CurrentMove = new Move();
+                CurrentMove = new Move();
             }
 
-            if (M_CurrentMove.FromSquare == null)
+            if (CurrentMove.FromSquare == null)
             {
-                M_CurrentMove.FromSquare = new Square(button.Type, row, col);
+                CurrentMove.FromSquare = new Square(button.Type, row, col);
                
             }
 
             else
             {
-                M_CurrentMove.ToSquare = new Square(button.Type, row, col);
+                CurrentMove.ToSquare = new Square(button.Type, row, col);
             }
 
-            if ((M_CurrentMove.FromSquare != null) && (M_CurrentMove.ToSquare != null))
+            if ((CurrentMove.FromSquare != null) && (CurrentMove.ToSquare != null))
             {
 
-                if (m_Game.isValidMove(M_CurrentMove))
-                {
-                    MakeMove();
+                //  if (m_Game.isValidMove(m_CurrentMove))
+                //     {
+                //       MakeMove();
 
-                    //     v_IsComputerGame = true;
-                }
+                //     v_IsComputerGame = true;
+                // }
                 /*
                 if (v_IsComputerGame)
                 {
@@ -134,9 +139,9 @@ namespace GameUI05
                 }
                 */
 
-
+                m_Game.gameRound(CurrentMove);
+                CurrentMove = null;
             }
-          //  M_CurrentMove = null;
 
         }
 
@@ -147,18 +152,30 @@ namespace GameUI05
 
         }
 
-        public void MakeMove()
+        public void makeMove(object sender, EventArgs e)
         {
-            this.Text = "From: " + M_CurrentMove.FromSquare.Row.ToString() + "," + M_CurrentMove.FromSquare.Column.ToString() + " To: " + M_CurrentMove.ToSquare.Row.ToString() + "," + M_CurrentMove.ToSquare.Column.ToString();
+            Move currentMove = sender as Move;
+            SquareButton toButton = Squares[currentMove.ToSquare.Row, currentMove.ToSquare.Column];
+            SquareButton fromButton = Squares[currentMove.FromSquare.Row, currentMove.FromSquare.Column];
+            toButton.Text = fromButton.Text;
+            fromButton.Text = Square.ToStringSqureType(Square.eSquareType.None);
 
-            Square fromSquare = M_CurrentMove.FromSquare;
-            Square toSquare = M_CurrentMove.ToSquare;
+          //  CurrentMove.FromSquare = null;
+            //CurrentMove.ToSquare = null;
+            //CurrentMove = null;
+
+
+            /*
+            this.Text = "From: " + CurrentMove.FromSquare.Row.ToString() + "," + CurrentMove.FromSquare.Column.ToString() + " To: " + CurrentMove.ToSquare.Row.ToString() + "," + CurrentMove.ToSquare.Column.ToString();
+
+            Square fromSquare = CurrentMove.FromSquare;
+            Square toSquare = CurrentMove.ToSquare;
             SquareButton fromButton = Squares[fromSquare.Row, fromSquare.Column];
             SquareButton toButton = Squares[toSquare.Row, toSquare.Column];
             /*
                         switch (M_CurrentMove.MoveType)
                         {
-                        */
+                        
             //   case (GameLogic.Move.eTypeOfMove.Regular):
 
             if (fromSquare.Type == Square.eSquareType.X && toSquare.Row == 0)
@@ -183,14 +200,16 @@ namespace GameUI05
 
             fromButton.Type = Square.eSquareType.None;
             fromButton.Text = string.Empty;
-          
+            */
+
+
             //    break;
 
 
             //         case (GameLogic.Move.eTypeOfMove.Jump):
-         //   M_CurrentMove.capturePieceOnBoard(m_Game.GetBoardGame());
+            //   M_CurrentMove.capturePieceOnBoard(m_Game.GetBoardGame());
 
-
+            /*
             if (fromSquare.Type == Square.eSquareType.X && toSquare.Row == 0)
             {
                 toButton.Type = Square.eSquareType.K;
@@ -211,11 +230,15 @@ namespace GameUI05
             //         break;
             //  }
 
-            M_CurrentMove = new Move();
-            M_CurrentMove.FromSquare = null;
-            M_CurrentMove.ToSquare = null;
+         //   M_CurrentMove = new Move();
 
+   
 
+            CurrentMove.FromSquare = null;
+            CurrentMove.ToSquare = null;
+            CurrentMove = null;
+           
+     */
         }
 
         private void invalidMove(object sender, EventArgs e)

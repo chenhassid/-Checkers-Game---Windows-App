@@ -10,6 +10,8 @@ namespace GameLogic
     public class GameManager
     {
         public event EventHandler InvalidMove;
+        public event EventHandler MakeMove;
+
 
         internal enum eGameStatus
         {
@@ -26,6 +28,7 @@ namespace GameLogic
         private Player m_Player1;
         private Player m_Player2;
         private static Random s_Random = new Random();
+        private List<Move> m_LegalJumps;
 
         public GameManager(string i_Player1, string i_Player2, short i_BoardSize)
         {
@@ -35,6 +38,7 @@ namespace GameLogic
             m_Player2 = new Player(Player.eShapeType.O, i_Player2, Player.ePlayerType.Person);
             m_BoardSize = i_BoardSize;
             m_BoardGame = new BoardGame(m_BoardSize);
+            m_LegalJumps = new List<Move>();
         }
 
         public GameManager(string i_Player1, short i_BoardSize)
@@ -45,6 +49,7 @@ namespace GameLogic
             m_Player2 = new Player(Player.eShapeType.O, "Computer", Player.ePlayerType.Computer);
             m_BoardSize = i_BoardSize;
             m_BoardGame = new BoardGame(m_BoardSize);
+            m_LegalJumps = new List<Move>();
         }
 
         internal Player GetPlayer1()
@@ -67,9 +72,7 @@ namespace GameLogic
             return this.m_GameStatus;
         }
 
-
-
-        private void gameRound(Move i_CurrentMove)
+        public void gameRound(Move i_CurrentMove)
         {
             if (this.m_GameStatus == eGameStatus.NotFinished)
             {
@@ -178,6 +181,9 @@ namespace GameLogic
                     currentMoveForComputer = computerJumpsMoves[indexOfJumplMove];
                     currentMoveForComputer.MoveType = Move.eTypeOfMove.Jump;
                     currentMoveForComputer.MoveOnBoard(m_BoardGame);
+
+                    MakeMove.Invoke(currentMoveForComputer, EventArgs.Empty);
+
                     m_Player2.IsJumpTurn = true;
 
                     if (hasAnotherJump(currentMoveForComputer, m_Player2))
@@ -200,6 +206,7 @@ namespace GameLogic
                 currentMoveForComputer = computerDiagonalMoves[indexOfDiagonalMove];
                 currentMoveForComputer.MoveType = Move.eTypeOfMove.Regular;
                 currentMoveForComputer.MoveOnBoard(m_BoardGame);
+                MakeMove.Invoke(currentMoveForComputer, EventArgs.Empty);
             }
             v_Turn = !v_Turn;
         }
@@ -272,37 +279,38 @@ namespace GameLogic
         }
         */
 
-        private Move getValidMove(Move i_CurrentMove, Player i_PlayerTurn, Player i_NotPlayerTurn)
-        {
-
-            if (!isValidMove(i_CurrentMove))
-            {
-           
-            //    InvalidMove.Invoke(this, EventArgs.Empty);
-
-            }
-
-
-            return i_CurrentMove;
-        }
-
         private void playCurrentPlayerTurn(Move i_CurrentMove, Player i_PlayerTurn, Player i_NotPlayerTurn)
         {
-            Move currentMove = getValidMove(i_CurrentMove, i_PlayerTurn, i_NotPlayerTurn);
-            currentMove.MoveOnBoard(m_BoardGame);
-            v_Turn = !v_Turn;
-
-            if (i_PlayerTurn.IsJumpTurn)
+            bool isValid = isValidMove(i_CurrentMove, i_PlayerTurn);
+            if (!isValid)
             {
-                while (hasAnotherJump(currentMove, i_PlayerTurn))
-                {
-                    //playAnotherTurn(ref currentMove, i_PlayerTurn, i_NotPlayerTurn);
+                InvalidMove.Invoke(this, EventArgs.Empty);
+            }
+            else
+            {
+                i_CurrentMove.MoveOnBoard(m_BoardGame);
+                MakeMove.Invoke(i_CurrentMove, EventArgs.Empty);
 
+                if (i_PlayerTurn.IsJumpTurn)
+                {
+                    if (hasAnotherJump(i_CurrentMove, i_PlayerTurn))
+                    {
+                        m_LegalJumps = getListOfJumpsForPiece(i_PlayerTurn.GetShapeType(), i_CurrentMove.ToSquare);
+                    }
+                    else
+                    {
+                        v_Turn = !v_Turn;
+                        i_PlayerTurn.IsJumpTurn = !i_PlayerTurn.IsJumpTurn;
+                    }
+                }
+                else
+                {
+                    v_Turn = !v_Turn;
                 }
             }
         }
         /*
-        private string playAnotherTurn(ref Move i_PrevtMove, Player i_PlayerTurn, Player i_NotPlayerTurn)
+        private string playAnotherTurn(Move i_PrevtMove, Player i_PlayerTurn, Player i_NotPlayerTurn)
         {
             List<Move> playerSecondJumps = getListOfJumpsForPiece(i_PlayerTurn.GetShapeType(), i_PrevtMove.ToSquare);
 
@@ -338,57 +346,52 @@ namespace GameLogic
             return (playerSecondJumps.Count > 0) ? true : false;
         }
 
-        // $G$ CSS-013 (-1) Input parameters names should start with i_PascaleCase.
-        public bool isValidMove(Move i_CurrentMove)
+        public bool isValidMove(Move i_CurrentMove, Player i_PlayerTurn)
         {
             bool isValid = false;
-            Player.eShapeType shapeType;
-            Player playerTurn;
-            if (v_Turn)
-            {
-                shapeType = Player.eShapeType.X;
-                playerTurn = m_Player1;
-            }
-            else
-            {
-                shapeType = Player.eShapeType.O;
-                playerTurn = m_Player2;
 
-            }
-            List<Move> playerJumpMoves = m_BoardGame.GetListOfPlayerJumps(shapeType);
-
-            if (playerJumpMoves.Count > 0)
+            if (i_PlayerTurn.IsJumpTurn)
             {
-                if (isContainsMoveElement(playerJumpMoves, i_CurrentMove))
+                if (isContainsMoveElement(m_LegalJumps, i_CurrentMove))
                 {
                     isValid = true;
                     i_CurrentMove.MoveType = Move.eTypeOfMove.Jump;
-
-
-                    playerTurn.IsJumpTurn = true;
-                }
-                else
-                {
-                    playerTurn.IsJumpTurn = false;
-                    //     GameUI.PrintErrorOfMove(Move.eTypeOfMove.Jump);
                 }
             }
             else
-            {
-                if (i_CurrentMove.CheckIsValidMove(shapeType))
+            {           
+                List<Move> playerJumpMoves = m_BoardGame.GetListOfPlayerJumps(i_PlayerTurn.GetShapeType());
+
+                if (playerJumpMoves.Count > 0)
                 {
-                    isValid = true;
-                    i_CurrentMove.MoveType = Move.eTypeOfMove.Regular;
+                    if (isContainsMoveElement(playerJumpMoves, i_CurrentMove))
+                    {
+                        isValid = true;
+                        i_CurrentMove.MoveType = Move.eTypeOfMove.Jump;
+                        i_PlayerTurn.IsJumpTurn = true;
+                    }
+                    else
+                    {
+                        i_PlayerTurn.IsJumpTurn = false;
+                        // InvalidMove.Invoke(this, EventArgs.Empty);
+                        isValid = false;
+                    }
                 }
                 else
                 {
-                    //      GameUI.PrintErrorOfMove(Move.eTypeOfMove.Regular);
+                    if (i_CurrentMove.CheckIsValidMove(i_PlayerTurn.GetShapeType()))
+                    {
+                        isValid = true;
+                        i_CurrentMove.MoveType = Move.eTypeOfMove.Regular;
+                    }
+                    else
+                    {
+                        isValid = false;
+                       // InvalidMove.Invoke(this, EventArgs.Empty);
+                    }
                 }
             }
-            if (!isValid)
-            {
-                InvalidMove.Invoke(this, EventArgs.Empty);
-            }
+
             return isValid;
         }
 
@@ -409,18 +412,7 @@ namespace GameLogic
             return isContainsMove;
         }
 
-        private Move getMoveFromString(string i_CurrentMoveString)
-        {
-            string fromSquare = i_CurrentMoveString.Substring(0, 2);
-            string toSquare = i_CurrentMoveString.Substring(3, 2);
-            int columnOfFromSquare = fromSquare[0] - 65;
-            int rowOfFromSquare = fromSquare[1] - 97;
-            int columnOfToSquare = toSquare[0] - 65;
-            int rowOfToSquare = toSquare[1] - 97;
-            Move currentMove = new Move(m_BoardGame.GetSquare(rowOfFromSquare, columnOfFromSquare), m_BoardGame.GetSquare(rowOfToSquare, columnOfToSquare));
 
-            return currentMove;
-        }
 
         private List<Move> getListOfJumpsForPiece(Player.eShapeType i_Shape, Square i_Square)
         {

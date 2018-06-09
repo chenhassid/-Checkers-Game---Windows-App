@@ -45,6 +45,8 @@ namespace GameUI05
             this.Player1.Text = GetStartGameForm.TextBoxPlayer1.Text;
             this.Player1.Font = new Font("Arial", 8F, FontStyle.Bold, GraphicsUnit.Point, (byte)0);
             this.Player1.Click += new System.EventHandler(this.label1_Click);
+            this.Controls.Add(this.Player1);
+
             // 
             // Player2
             // 
@@ -56,13 +58,12 @@ namespace GameUI05
             this.Player2.Font = new Font("Arial", 8F, FontStyle.Bold, GraphicsUnit.Point, (byte)0);
             this.Player2.Text = GetStartGameForm.TextBoxPlayer2.Text;
             this.Player2.Click += new System.EventHandler(this.label2_Click);
+            this.Controls.Add(this.Player2);
             // 
             // BoardGameForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = AutoScaleMode.Font;
-            this.Controls.Add(this.Player2);
-            this.Controls.Add(this.Player1);
+            this.AutoScaleMode = AutoScaleMode.Font;     
             this.Name = "BoardGameForm";
             this.Text = "Damka";
             this.Load += new System.EventHandler(this.BoardGame_Load);
@@ -75,6 +76,7 @@ namespace GameUI05
             this.Load += new System.EventHandler(this.BoardGame_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
+           
 
         }
 
