@@ -20,14 +20,15 @@ namespace GameUI05
         private Move m_CurrentMove;
         private StartGameForm m_StartGameForm;
         private bool v_IsComputerGame;
-        private Player m_PlayerTurn;
+        internal string m_Player1Name;
+        internal string m_Player2Name;
 
-
-        public 
-            BoardGameForm(StartGameForm i_StartGameForm)
+        public BoardGameForm(StartGameForm i_StartGameForm)
         {
             m_StartGameForm = i_StartGameForm;
             m_Size = m_StartGameForm.BoardSize;
+            m_Player1Name = m_StartGameForm.TextPlayer1;
+            m_Player2Name = m_StartGameForm.TextPlayer2;
             m_CurrentMove = null;
             m_Squares = new SquareButton[this.m_Size, this.m_Size];
             v_IsComputerGame = !m_StartGameForm.CheckBoxPlayer2.Checked;
@@ -35,8 +36,6 @@ namespace GameUI05
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(SizeBoard * k_Margin - 8, SizeBoard * k_Margin + k_Margin);
             this.FormBorderStyle = FormBorderStyle.Fixed3D;
-            m_PlayerTurn = new Player(Player.eShapeType.X, m_StartGameForm.TextBoxPlayer1.Text, Player.ePlayerType.Person);
-
         }
 
         protected override void OnLoad(EventArgs e)
@@ -47,11 +46,11 @@ namespace GameUI05
 
             if (v_IsComputerGame)
             {
-                m_Game = new GameManager(m_StartGameForm.TextBoxPlayer1.Text, m_StartGameForm.BoardSize);
+                m_Game = new GameManager(m_StartGameForm.TextPlayer1, m_StartGameForm.BoardSize);
             }
             else
             {
-                m_Game = new GameManager(m_StartGameForm.TextBoxPlayer1.Text, m_StartGameForm.TextBoxPlayer2.Text, m_StartGameForm.BoardSize);
+                m_Game = new GameManager(m_StartGameForm.TextPlayer1, m_StartGameForm.TextPlayer2, m_StartGameForm.BoardSize);
             }
 
             registerEvents();
@@ -96,6 +95,7 @@ namespace GameUI05
         {
             m_Game.InvalidMove += new EventHandler(invalidMove);
             m_Game.MakeMove += new EventHandler(makeMove);
+            m_Game.EndGameRound += new EventHandler(OnEndRoundGame);
         }
 
         public void button_Click(Object sender, EventArgs e)
@@ -103,7 +103,7 @@ namespace GameUI05
             SquareButton button = (SquareButton)sender;
             int row = button.Row;
             int col = button.Column;
-           
+
             if (CurrentMove == null)
             {
                 CurrentMove = new Move();
@@ -111,11 +111,9 @@ namespace GameUI05
 
             if (CurrentMove.FromSquare == null)
             {
-                //צבע כפתור
                 button.BackColor = Color.AliceBlue;
+                CurrentMove.FromSquare = new Square(row, col);
 
-                CurrentMove.FromSquare = new Square(button.Type, row, col);
-               
             }
             else
             {
@@ -126,12 +124,12 @@ namespace GameUI05
                 }
                 else
                 {
-                    CurrentMove.ToSquare = new Square(button.Type, row, col);                   
+                    CurrentMove.ToSquare = new Square(row, col);
                 }
             }
 
             if ((CurrentMove.FromSquare != null) && (CurrentMove.ToSquare != null))
-            {           
+            {
                 m_Game.gameRound(CurrentMove);
                 Squares[CurrentMove.FromSquare.Row, CurrentMove.FromSquare.Column].BackColor = Color.White;
                 CurrentMove.FromSquare = null;
@@ -141,18 +139,22 @@ namespace GameUI05
 
         }
 
-
-        private void MakeComputerMove()
-        {
-            // m_Game.playComputerTurn();
-
-        }
-
         public void makeMove(object sender, EventArgs e)
         {
             Move currentMove = sender as Move;
             SquareButton toButton = Squares[currentMove.ToSquare.Row, currentMove.ToSquare.Column];
             SquareButton fromButton = Squares[currentMove.FromSquare.Row, currentMove.FromSquare.Column];
+            Square fromSquare = CurrentMove.FromSquare;
+            Square toSquare = CurrentMove.ToSquare;
+
+            Console.WriteLine("from square row:" + fromSquare.Row);
+            Console.WriteLine("from square column" + fromSquare.Column);
+            Console.WriteLine("from square type" + fromSquare.Type);
+
+            Console.WriteLine("to square row:" + toSquare.Row);
+            Console.WriteLine("to square column" + toSquare.Column);
+            Console.WriteLine("to square type:" + toSquare.Type);
+
 
             if (currentMove.MoveType == GameLogic.Move.eTypeOfMove.Jump)
             {
@@ -160,89 +162,22 @@ namespace GameUI05
                 int captureColumn = fromButton.Column > toButton.Column ? fromButton.Column - 1 : fromButton.Column + 1;
                 Squares[captureRow, captureColumn].Text = " ";
             }
-
-            toButton.Text = fromButton.Text;
-            fromButton.Text = Square.ToStringSqureType(Square.eSquareType.None);
-
-          //  CurrentMove.FromSquare = null;
-            //CurrentMove.ToSquare = null;
-            //CurrentMove = null;
-
-
-            /*
-            this.Text = "From: " + CurrentMove.FromSquare.Row.ToString() + "," + CurrentMove.FromSquare.Column.ToString() + " To: " + CurrentMove.ToSquare.Row.ToString() + "," + CurrentMove.ToSquare.Column.ToString();
-
-            Square fromSquare = CurrentMove.FromSquare;
-            Square toSquare = CurrentMove.ToSquare;
-            SquareButton fromButton = Squares[fromSquare.Row, fromSquare.Column];
-            SquareButton toButton = Squares[toSquare.Row, toSquare.Column];
-            /*
-                        switch (M_CurrentMove.MoveType)
-                        {
-                        
-            //   case (GameLogic.Move.eTypeOfMove.Regular):
-
             if (fromSquare.Type == Square.eSquareType.X && toSquare.Row == 0)
             {
-                toButton.Type = Square.eSquareType.K;
                 toButton.Text = "K";
             }
-
             else
             {
                 if (fromSquare.Type == Square.eSquareType.O && toSquare.Row == m_Size - 1)
                 {
-                    toButton.Type = Square.eSquareType.U;
                     toButton.Text = "U";
                 }
                 else
                 {
-                    toButton.Type = fromSquare.Type;
-                    toButton.Text = fromSquare.ToStringSqureType();
+                    toButton.Text = fromButton.Text;
                 }
             }
-
-            fromButton.Type = Square.eSquareType.None;
-            fromButton.Text = string.Empty;
-            */
-
-
-            //    break;
-
-
-            //         case (GameLogic.Move.eTypeOfMove.Jump):
-            //   M_CurrentMove.capturePieceOnBoard(m_Game.GetBoardGame());
-
-            /*
-            if (fromSquare.Type == Square.eSquareType.X && toSquare.Row == 0)
-            {
-                toButton.Type = Square.eSquareType.K;
-            }
-
-            else
-            {
-                if (fromSquare.Type == Square.eSquareType.O && toSquare.Row == m_Size - 1)
-                {
-                    toButton.Type = Square.eSquareType.U;
-                }
-                else
-                {
-                    toButton.Type = fromSquare.Type;
-                }
-            }
-            fromButton.Type = Square.eSquareType.None;
-            //         break;
-            //  }
-
-         //   M_CurrentMove = new Move();
-
-   
-
-            CurrentMove.FromSquare = null;
-            CurrentMove.ToSquare = null;
-            CurrentMove = null;
-           
-     */
+            fromButton.Text = Square.ToStringSqureType(Square.eSquareType.None);
         }
 
         private void invalidMove(object sender, EventArgs e)
@@ -250,6 +185,40 @@ namespace GameUI05
             MessageBox.Show("Invalid Move!" + Environment.NewLine + "Please choose a valid move", "Damka", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
+        private void OnEndRoundGame(object sender, EventArgs e)
+        {
+            DialogResult isAnotherRound = DialogResult.None;
+
+            if (m_Game.GameStatus == GameManager.eGameStatus.Draw)
+            {
+                string drawMsg = "Tie!" + Environment.NewLine + "Another Round?";
+                isAnotherRound = MessageBox.Show(drawMsg, "Damke", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            }
+            else
+            {
+                string winMsg = (sender as Player).Name + " Won!" + Environment.NewLine + "Another Round?";
+                isAnotherRound = MessageBox.Show(winMsg, "Damke", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            }
+            if (isAnotherRound == DialogResult.No)
+            {
+                this.Close();
+                Application.Exit();
+            }
+
+            if (isAnotherRound == DialogResult.Yes)
+            {
+                playAnotherRound();
+            }
+        }
+
+        private void playAnotherRound()
+        {
+            this.Controls.Clear();
+            this.OnLoad(EventArgs.Empty);
+            this.labelPlayer1.Text = m_Player1Name + ": " + m_Game.Player1.Points;
+            this.labelPlayer2.Text = m_Player2Name + ": " + m_Game.Player2.Points;
+
+        }
         private void BoardGame_Load(object sender, EventArgs e)
         {
 

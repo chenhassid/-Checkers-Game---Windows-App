@@ -48,7 +48,7 @@ namespace GameLogic
             }
         }
 
-        internal int Points
+        public int Points
         {
             get
             {
@@ -74,7 +74,7 @@ namespace GameLogic
             }
         }
 
-        internal string Name
+        public string Name
         {
             get
             {

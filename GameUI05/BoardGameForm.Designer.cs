@@ -9,9 +9,6 @@ namespace GameUI05
     partial class BoardGameForm : Form
     {  
        
-
-
-
         private System.ComponentModel.IContainer components = null;
        
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
@@ -31,34 +28,35 @@ namespace GameUI05
         /// </summary>
         private void InitializeComponent()
         {
-            this.Player1 = new Label();
-            this.Player2 = new Label();
+            this.labelPlayer1 = new Label();
+            this.labelPlayer2 = new Label();
             this.SuspendLayout();
             // 
             // Player1
             // 
-            this.Player1.AutoSize = true;
-            this.Player1.Location = new System.Drawing.Point(52, 22);
-            this.Player1.Name = "Player1";
-            this.Player1.Size = new System.Drawing.Size(45, 13);
-            this.Player1.TabIndex = 0;
-            this.Player1.Text = GetStartGameForm.TextBoxPlayer1.Text;
-            this.Player1.Font = new Font("Arial", 8F, FontStyle.Bold, GraphicsUnit.Point, (byte)0);
-            this.Player1.Click += new System.EventHandler(this.label1_Click);
-            this.Controls.Add(this.Player1);
+            this.labelPlayer1.AutoSize = true;
+            this.labelPlayer1.Location = new System.Drawing.Point(52, 22);
+            this.labelPlayer1.Name = "Player1";
+            this.labelPlayer1.Size = new System.Drawing.Size(45, 13);
+            this.labelPlayer1.TabIndex = 0;
+            this.labelPlayer1.Font = new Font("Arial", 8F, FontStyle.Bold, GraphicsUnit.Point, (byte)0);
+            this.labelPlayer1.Click += new System.EventHandler(this.label1_Click);
+
+            this.labelPlayer1.Text = m_Player1Name + ": 0";
+            this.Controls.Add(this.labelPlayer1);
 
             // 
             // Player2
             // 
-            this.Player2.AutoSize = true;
-            this.Player2.Location = new System.Drawing.Point(248, 22);
-            this.Player2.Name = "Player2";
-            this.Player2.Size = new System.Drawing.Size(42, 13);
-            this.Player2.TabIndex = 1;
-            this.Player2.Font = new Font("Arial", 8F, FontStyle.Bold, GraphicsUnit.Point, (byte)0);
-            this.Player2.Text = GetStartGameForm.TextBoxPlayer2.Text;
-            this.Player2.Click += new System.EventHandler(this.label2_Click);
-            this.Controls.Add(this.Player2);
+            this.labelPlayer2.AutoSize = true;
+            this.labelPlayer2.Location = new System.Drawing.Point(248, 22);
+            this.labelPlayer2.Name = "Player2";
+            this.labelPlayer2.Size = new System.Drawing.Size(42, 13);
+            this.labelPlayer2.TabIndex = 1;
+            this.labelPlayer2.Font = new Font("Arial", 8F, FontStyle.Bold, GraphicsUnit.Point, (byte)0);
+            this.labelPlayer2.Text = m_Player2Name + ": 0";
+            this.labelPlayer2.Click += new System.EventHandler(this.label2_Click);
+            this.Controls.Add(this.labelPlayer2);
             // 
             // BoardGameForm
             // 
@@ -76,7 +74,9 @@ namespace GameUI05
             this.Load += new System.EventHandler(this.BoardGame_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
+
            
+
 
         }
 
@@ -103,6 +103,7 @@ namespace GameUI05
                         else
                         {
                             m_Squares[i, j] = new SquareButton(Square.eSquareType.None, i, j);
+                            m_Squares[i, j].Enabled = false;
                             m_Squares[i, j].BackColor = Color.Gray;
                             int yLocation = i * 50 + 50;
                             int xLocation = j * 50 - 4;
@@ -125,6 +126,7 @@ namespace GameUI05
                         else
                         {
                             m_Squares[i, j] = new SquareButton(Square.eSquareType.None, i, j);
+                            m_Squares[i, j].Enabled = false;
                             m_Squares[i, j].BackColor = Color.Gray;
                             int yLocation = i * 50 + 50;
                             int xLocation = j * 50 - 4;
@@ -183,8 +185,8 @@ namespace GameUI05
 
             }
         }
-        private Label Player1;
-        private Label Player2;
+        private Label labelPlayer1;
+        private Label labelPlayer2;
 
     }
 

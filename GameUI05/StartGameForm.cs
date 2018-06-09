@@ -27,19 +27,19 @@ namespace GameUI05
             }
         }
 
-        public TextBox TextBoxPlayer1
+        public string TextPlayer1
         {
             get
             {
-              return this.textBoxPlayer1;
+              return this.textBoxPlayer1.Text;
             }
         }
 
-        public TextBox TextBoxPlayer2
+        public string TextPlayer2
         {
             get
             {
-                return this.textBoxPlayer2;
+                return this.textBoxPlayer2.Text;
             }
         }
 

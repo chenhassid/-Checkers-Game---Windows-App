@@ -28,6 +28,11 @@ namespace GameLogic
             this.m_Row = i_Row;
             this.m_Column = i_Column;
         }
+        public Square(int i_Row, int i_Column)
+        {
+            this.m_Row = i_Row;
+            this.m_Column = i_Column;
+        }
 
         public eSquareType Type
         {

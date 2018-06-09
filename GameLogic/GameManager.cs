@@ -10,10 +10,14 @@ namespace GameLogic
     public class GameManager
     {
         public event EventHandler InvalidMove;
+
         public event EventHandler MakeMove;
 
+        public event EventHandler EndGameRound;
 
-        internal enum eGameStatus
+
+
+        public enum eGameStatus
         {
             Winner,
             Lose,
@@ -54,14 +58,19 @@ namespace GameLogic
             m_LegalJumps = new List<Move>();
         }
 
-        internal Player GetPlayer1()
+        public Player Player1
         {
-            return this.m_Player1;
+            get
+            {
+                return this.m_Player1;
+            }
         }
-
-        internal Player GetPlayer2()
+        public Player Player2
         {
-            return this.m_Player2;
+            get
+            {
+                return this.m_Player2;
+            }
         }
 
         public BoardGame GetBoardGame()
@@ -69,13 +78,20 @@ namespace GameLogic
             return this.m_BoardGame;
         }
 
-        internal eGameStatus GetGameStatus()
+        public eGameStatus GameStatus
         {
-            return this.m_GameStatus;
+            get { return this.m_GameStatus; }
+            set { this.m_GameStatus = value; }
         }
 
         public void gameRound(Move i_CurrentMove)
         {
+            i_CurrentMove.FromSquare = m_BoardGame.GetSquare(i_CurrentMove.FromSquare.Row, i_CurrentMove.FromSquare.Column);
+            i_CurrentMove.ToSquare = m_BoardGame.GetSquare(i_CurrentMove.ToSquare.Row, i_CurrentMove.ToSquare.Column);
+
+            Console.WriteLine("in game:from square type:" + i_CurrentMove.FromSquare.Type);
+            Console.WriteLine("to square type:" + i_CurrentMove.ToSquare.Type);
+
             if (this.m_GameStatus == eGameStatus.NotFinished)
             {
                 if (v_Turn)
@@ -86,31 +102,60 @@ namespace GameLogic
                 {
                     if (m_Player2.PlayerType == Player.ePlayerType.Person)
                     {
-                       
-
                         playCurrentPlayerTurn(i_CurrentMove, m_Player2, m_Player1);
                     }
-                    else
+                }
+                if (!v_Turn)
+                {
+                    if (m_Player2.PlayerType == Player.ePlayerType.Computer)
                     {
                         playComputerTurn();
                     }
-
-                    //checkGameStatus();
                 }
             }
 
-            /*
-            if (GameUI05.checkForAnotherGameRound())
+            checkGameStatus();
+
+            if (this.m_GameStatus != eGameStatus.NotFinished)
             {
-                v_Turn = true;
-                this.m_GameStatus = eGameStatus.NotFinished;
-                short sizeOfBoard = m_BoardGame.Size;
-                this.m_BoardGame = new BoardGame(sizeOfBoard);
+                if (this.m_GameStatus == eGameStatus.Winner)
+                {
+                    EndGameRound.Invoke(Player1, EventArgs.Empty);
+                }
+                else
+                {
+                    EndGameRound.Invoke(Player2, EventArgs.Empty);
+                }
+            }      
+        }
 
-                gameRound();
+        private void checkGameStatus()
+        {
+            List<Move> diagonalMovesOfPlayer1 = m_BoardGame.GetListOfPlayerDiagonalMoves(Player.eShapeType.X);
+            List<Move> diagonalMovesOfPlayer2 = m_BoardGame.GetListOfPlayerDiagonalMoves(Player.eShapeType.O);
+            List<Move> jumpsMovesOfPlayer1 = m_BoardGame.GetListOfPlayerJumps(Player.eShapeType.X);
+            List<Move> jumpsMovesOfPlayer2 = m_BoardGame.GetListOfPlayerJumps(Player.eShapeType.O);
+
+            if (diagonalMovesOfPlayer1.Count == 0 && diagonalMovesOfPlayer2.Count == 0 && jumpsMovesOfPlayer1.Count == 0 && jumpsMovesOfPlayer2.Count == 0)
+            {
+                this.m_GameStatus = eGameStatus.Draw;
             }
-            */
-
+            else
+            {
+                if (diagonalMovesOfPlayer1.Count == 0 && jumpsMovesOfPlayer1.Count == 0 || m_BoardGame.GetPointsOfPlayer(m_Player1.GetShapeType()) == 0)
+                {
+                    this.m_GameStatus = eGameStatus.Lose;
+                    m_Player2.Points = m_BoardGame.GetPointsOfPlayer(m_Player2.GetShapeType()) - m_BoardGame.GetPointsOfPlayer(m_Player1.GetShapeType());
+                }
+                else
+                {
+                    if (diagonalMovesOfPlayer2.Count == 0 && jumpsMovesOfPlayer2.Count == 0 || m_BoardGame.GetPointsOfPlayer(m_Player2.GetShapeType()) == 0)
+                    {
+                        this.m_GameStatus = eGameStatus.Winner;
+                        m_Player1.Points = m_BoardGame.GetPointsOfPlayer(m_Player1.GetShapeType()) - m_BoardGame.GetPointsOfPlayer(m_Player2.GetShapeType());
+                    }
+                }
+            }
         }
         /*
         private void playFirstMoveOfGame()
@@ -142,19 +187,7 @@ namespace GameLogic
         }
         
 
-        private void setSeconedPlayer(string i_TypeOfSeconedPlayer)
-        {
-            if (GameUI.IsUserTypeOfPlayer(i_TypeOfSeconedPlayer))
-            {
-                string nameOfPlayer2 = GameUI.GetSeconedPlayerName();
-                this.m_Player2 = new Player(Player.eShapeType.O, nameOfPlayer2, Player.ePlayerType.Person);
-            }
-            else
-            {
-                this.m_Player2 = new Player(Player.eShapeType.O, "Computer", Player.ePlayerType.Computer);
-                s_Random = new Random();
-            }
-        }
+      
         */
 
         public void playComputerTurn()
@@ -170,9 +203,10 @@ namespace GameLogic
                     int indexOfJumplMove = s_Random.Next(0, lengthOfJumpsList);
                     currentMoveForComputer = computerJumpsMoves[indexOfJumplMove];
                     currentMoveForComputer.MoveType = Move.eTypeOfMove.Jump;
-                    currentMoveForComputer.MoveOnBoard(m_BoardGame);
+
 
                     MakeMove.Invoke(currentMoveForComputer, EventArgs.Empty);
+                    currentMoveForComputer.MoveOnBoard(m_BoardGame);
 
                     m_Player2.IsJumpTurn = true;
 
@@ -192,7 +226,6 @@ namespace GameLogic
                 List<Move> computerDiagonalMoves = m_BoardGame.GetListOfPlayerDiagonalMoves(Player.eShapeType.O);
                 int lengthOfListDiagonal = computerDiagonalMoves.Count;
                 int indexOfDiagonalMove = s_Random.Next(0, lengthOfListDiagonal);
-                Console.WriteLine(indexOfDiagonalMove);
                 currentMoveForComputer = computerDiagonalMoves[indexOfDiagonalMove];
                 currentMoveForComputer.MoveType = Move.eTypeOfMove.Regular;
                 currentMoveForComputer.MoveOnBoard(m_BoardGame);
@@ -279,8 +312,9 @@ namespace GameLogic
             }
             else
             {
-                i_CurrentMove.MoveOnBoard(m_BoardGame);
+
                 MakeMove.Invoke(i_CurrentMove, EventArgs.Empty);
+                i_CurrentMove.MoveOnBoard(m_BoardGame);
 
                 if (i_PlayerTurn.IsJumpTurn)
                 {
@@ -350,7 +384,7 @@ namespace GameLogic
                 }
             }
             else
-            {           
+            {
                 List<Move> playerJumpMoves = m_BoardGame.GetListOfPlayerJumps(i_PlayerTurn.GetShapeType());
 
                 if (playerJumpMoves.Count > 0)
@@ -378,7 +412,7 @@ namespace GameLogic
                     else
                     {
                         isValid = false;
-                       // InvalidMove.Invoke(this, EventArgs.Empty);
+                        // InvalidMove.Invoke(this, EventArgs.Empty);
                     }
                 }
             }
