@@ -213,10 +213,12 @@ namespace GameUI05
 
         private void playAnotherRound()
         {
+            int player1Points = m_Game.Player1.Points;
+            int player2Points = m_Game.Player2.Points;
             this.Controls.Clear();
             this.OnLoad(EventArgs.Empty);
-            this.labelPlayer1.Text = m_Player1Name + ": " + m_Game.Player1.Points;
-            this.labelPlayer2.Text = m_Player2Name + ": " + m_Game.Player2.Points;
+            this.labelPlayer1.Text = m_Player1Name + ": " + player1Points;
+            this.labelPlayer2.Text = m_Player2Name + ": " + player2Points;
 
         }
         private void BoardGame_Load(object sender, EventArgs e)
