@@ -38,6 +38,7 @@ namespace GameLogic
             m_Player2 = new Player(Player.eShapeType.O, i_Player2, Player.ePlayerType.Person);
             m_BoardSize = i_BoardSize;
             m_BoardGame = new BoardGame(m_BoardSize);
+            m_BoardGame.BuildBoard();
             m_LegalJumps = new List<Move>();
         }
 
@@ -49,6 +50,7 @@ namespace GameLogic
             m_Player2 = new Player(Player.eShapeType.O, "Computer", Player.ePlayerType.Computer);
             m_BoardSize = i_BoardSize;
             m_BoardGame = new BoardGame(m_BoardSize);
+            m_BoardGame.BuildBoard();
             m_LegalJumps = new List<Move>();
         }
 
@@ -84,19 +86,7 @@ namespace GameLogic
                 {
                     if (m_Player2.PlayerType == Player.ePlayerType.Person)
                     {
-                        /*
-                         if (GameUI.IsQuitInput(currentMoveString))
-                         {
-                             if (checkForQuitting(m_Player2, m_Player1))
-                             {
-                                 break;
-                             }
-                             else
-                             {
-                                 currentMoveString = GameUI.GetMessageInvalidQuit(m_BoardGame);
-                             }
-                         }
-                         */
+                       
 
                         playCurrentPlayerTurn(i_CurrentMove, m_Player2, m_Player1);
                     }
@@ -280,6 +270,7 @@ namespace GameLogic
         */
 
         private void playCurrentPlayerTurn(Move i_CurrentMove, Player i_PlayerTurn, Player i_NotPlayerTurn)
+
         {
             bool isValid = isValidMove(i_CurrentMove, i_PlayerTurn);
             if (!isValid)
@@ -300,7 +291,7 @@ namespace GameLogic
                     else
                     {
                         v_Turn = !v_Turn;
-                        i_PlayerTurn.IsJumpTurn = !i_PlayerTurn.IsJumpTurn;
+                        i_PlayerTurn.IsJumpTurn = false;
                     }
                 }
                 else

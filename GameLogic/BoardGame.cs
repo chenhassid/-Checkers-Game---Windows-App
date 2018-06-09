@@ -29,7 +29,7 @@ namespace GameLogic
         {
             get { return m_Size; }
         }
-
+        /*
         internal Square.eSquareType StatusType
         {
             get { return this.StatusType; }
@@ -38,7 +38,7 @@ namespace GameLogic
                 this.StatusType = value;
             }
         }
-
+        */
         internal short GetSize()
         {
             return this.m_Size;
@@ -250,8 +250,11 @@ namespace GameLogic
 
         public List<Move> GetListOfPlayerJumps(Player.eShapeType i_Shape)
         {
+
             List<Move> leggalJumps = new List<Move>();
             short boardSize = this.GetSize();
+
+            
 
             for (int r = 0; r < boardSize; r++)
             {
@@ -334,5 +337,48 @@ namespace GameLogic
 
             return leggalJumps;
         }
+
+
+        public void PrintBoard()
+        {
+            StringBuilder stringBuilderBoard = new StringBuilder();
+            stringBuilderBoard.Append(" ");
+            for (int k = 0; k < this.m_Size; k++)
+            {
+                stringBuilderBoard.Append("  " + (char)(k + 65) + " ");
+            }
+
+            stringBuilderBoard.Append(System.Environment.NewLine);
+
+            for (int i = 0; i < this.m_Size; i++)
+            {
+                stringBuilderBoard.Append(" ");
+                for (int k = 0; k < this.m_Size * 4 + 1; k++)
+                {
+                    stringBuilderBoard.Append("=");
+                }
+
+                stringBuilderBoard.Append(System.Environment.NewLine);
+                stringBuilderBoard.Append((char)(i + 97));
+
+                for (int j = 0; j < this.m_Size; j++)
+                {                   
+                    stringBuilderBoard.Append("|" + Square.ToStringSqureType(m_Board[i, j].Type));
+                }
+
+                stringBuilderBoard.Append("|");
+                stringBuilderBoard.Append(System.Environment.NewLine);
+            }
+
+            stringBuilderBoard.Append(" ");
+            for (int k = 0; k < this.m_Size * 4 + 1; k++)
+            {
+                stringBuilderBoard.Append("=");
+            }
+            System.Console.WriteLine(stringBuilderBoard.ToString());
+
+        }
+
+       
     }
 }

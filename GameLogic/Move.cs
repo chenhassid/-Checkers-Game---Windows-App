@@ -292,49 +292,56 @@ namespace GameLogic
 
         internal void MoveOnBoard(BoardGame i_BoardGame)
         {
+            Square fromSquare = i_BoardGame.GetSquare(this.FromSquare.Row, this.FromSquare.Column);
+            Square toSquare = i_BoardGame.GetSquare(this.ToSquare.Row, this.ToSquare.Column);
+
             switch (this.MoveType)
             {
                 case (eTypeOfMove.Regular):
 
-                    if (m_FromSquare.Type == Square.eSquareType.X && m_ToSquare.Row == 0)
+                    if (fromSquare.Type == Square.eSquareType.X && toSquare.Row == 0)
                     {
-                        m_ToSquare.Type = Square.eSquareType.K;
+                        toSquare.Type = Square.eSquareType.K;
                     }
 
                     else
-                        if (m_FromSquare.Type == Square.eSquareType.O && m_ToSquare.Row == i_BoardGame.GetSize() - 1)
+                        if (fromSquare.Type == Square.eSquareType.O && toSquare.Row == i_BoardGame.GetSize() - 1)
                     {
-                        m_ToSquare.Type = Square.eSquareType.U;
+                        toSquare.Type = Square.eSquareType.U;
                     }
                     else
                     {
-                        m_ToSquare.Type = m_FromSquare.Type;
+                        toSquare.Type = fromSquare.Type;
+                        System.Console.WriteLine("to new type: " + Square.ToStringSqureType(toSquare.Type));
                     }
-                    m_FromSquare.Type = Square.eSquareType.None;
+                    fromSquare.Type = Square.eSquareType.None;
+
+                    System.Console.WriteLine("from new type: " + Square.ToStringSqureType(fromSquare.Type));
                     break;
 
                 case (eTypeOfMove.Jump):
                     capturePieceOnBoard(i_BoardGame);
 
-                    if (m_FromSquare.Type == Square.eSquareType.X && m_ToSquare.Row == 0)
+                    if (fromSquare.Type == Square.eSquareType.X && toSquare.Row == 0)
                     {
-                        m_ToSquare.Type = Square.eSquareType.K;
+                        toSquare.Type = Square.eSquareType.K;
                     }
 
                     else
                     {
-                        if (m_FromSquare.Type == Square.eSquareType.O && m_ToSquare.Row == i_BoardGame.GetSize() - 1)
+                        if (fromSquare.Type == Square.eSquareType.O && toSquare.Row == i_BoardGame.GetSize() - 1)
                         {
-                            m_ToSquare.Type = Square.eSquareType.U;
+                            toSquare.Type = Square.eSquareType.U;
                         }
                         else
                         {
-                            m_ToSquare.Type = m_FromSquare.Type;
+                            toSquare.Type = fromSquare.Type;
                         }
                     }
-                    m_FromSquare.Type = Square.eSquareType.None;
+                    fromSquare.Type = Square.eSquareType.None;
                     break;
             }
+            i_BoardGame.PrintBoard();
         }
 
         public void capturePieceOnBoard(BoardGame i_BoardGame)

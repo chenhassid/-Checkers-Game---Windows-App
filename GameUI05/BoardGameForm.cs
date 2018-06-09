@@ -23,7 +23,8 @@ namespace GameUI05
         private Player m_PlayerTurn;
 
 
-        public BoardGameForm(StartGameForm i_StartGameForm)
+        public 
+            BoardGameForm(StartGameForm i_StartGameForm)
         {
             m_StartGameForm = i_StartGameForm;
             m_Size = m_StartGameForm.BoardSize;
@@ -95,17 +96,14 @@ namespace GameUI05
         {
             m_Game.InvalidMove += new EventHandler(invalidMove);
             m_Game.MakeMove += new EventHandler(makeMove);
-
         }
-
-
 
         public void button_Click(Object sender, EventArgs e)
         {
             SquareButton button = (SquareButton)sender;
             int row = button.Row;
             int col = button.Column;
-
+           
             if (CurrentMove == null)
             {
                 CurrentMove = new Move();
@@ -113,33 +111,31 @@ namespace GameUI05
 
             if (CurrentMove.FromSquare == null)
             {
+                //צבע כפתור
+                button.BackColor = Color.AliceBlue;
+
                 CurrentMove.FromSquare = new Square(button.Type, row, col);
                
             }
-
             else
             {
-                CurrentMove.ToSquare = new Square(button.Type, row, col);
+                if (CurrentMove.FromSquare.Row == row && CurrentMove.FromSquare.Column == col)
+                {
+                    button.BackColor = Color.White;
+                    CurrentMove.FromSquare = null;
+                }
+                else
+                {
+                    CurrentMove.ToSquare = new Square(button.Type, row, col);                   
+                }
             }
 
             if ((CurrentMove.FromSquare != null) && (CurrentMove.ToSquare != null))
-            {
-
-                //  if (m_Game.isValidMove(m_CurrentMove))
-                //     {
-                //       MakeMove();
-
-                //     v_IsComputerGame = true;
-                // }
-                /*
-                if (v_IsComputerGame)
-                {
-                    MakeComputerMove();
-                    v_IsComputerGame = !v_IsComputerGame;
-                }
-                */
-
+            {           
                 m_Game.gameRound(CurrentMove);
+                Squares[CurrentMove.FromSquare.Row, CurrentMove.FromSquare.Column].BackColor = Color.White;
+                CurrentMove.FromSquare = null;
+                CurrentMove.ToSquare = null;
                 CurrentMove = null;
             }
 
@@ -157,6 +153,14 @@ namespace GameUI05
             Move currentMove = sender as Move;
             SquareButton toButton = Squares[currentMove.ToSquare.Row, currentMove.ToSquare.Column];
             SquareButton fromButton = Squares[currentMove.FromSquare.Row, currentMove.FromSquare.Column];
+
+            if (currentMove.MoveType == GameLogic.Move.eTypeOfMove.Jump)
+            {
+                int captureRow = fromButton.Row > toButton.Row ? fromButton.Row - 1 : fromButton.Row + 1;
+                int captureColumn = fromButton.Column > toButton.Column ? fromButton.Column - 1 : fromButton.Column + 1;
+                Squares[captureRow, captureColumn].Text = " ";
+            }
+
             toButton.Text = fromButton.Text;
             fromButton.Text = Square.ToStringSqureType(Square.eSquareType.None);
 
